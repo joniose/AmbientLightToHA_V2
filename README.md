@@ -7,6 +7,10 @@ It works on any Python-compatible device, such as PCs, Raspberry Pis, or small s
 
 ---
 
+Forked and changed, that the area under the mouse takes the color. After time x it changes to the most color of the screen the ouse is on.
+
+---
+
 ## 🔧 Requirements
 
 - Python 3.9+
@@ -19,15 +23,9 @@ It works on any Python-compatible device, such as PCs, Raspberry Pis, or small s
 
 ## ⚙️ Setup
 
-Before running the script, you need to set the following environment variables:
+Before running the script, you need to edit the variables:
 
-### Linux / macOS
-```bash
-export HA_URL="http://192.xxx.xxx.xx:8123/api/states/sensor.dominant_color"
-export HA_TOKEN="LONG_LIVED_ACCESS_TOKEN"
-```
-
-### Windows (PowerShell)
+### Windows 
 ```powershell
 $env:HA_URL="http://192.xxx.xxx.xx:8123/api/states/sensor.dominant_color"
 $env:HA_TOKEN="LONG_LIVED_ACCESS_TOKEN"
@@ -42,7 +40,7 @@ $env:HA_TOKEN="LONG_LIVED_ACCESS_TOKEN"
 Run the script with:
 
 ```bash
-python ambilight.py
+python ambient.py
 ```
 
 The script will:
@@ -67,66 +65,25 @@ This sensor contains:
 Example automation to control LEDs:
 
 ```yaml
-alias: Ambilight LEDs
-trigger:
-  - platform: state
-    entity_id: sensor.dominant_color
-action:
-  - service: light.turn_on
+alias: Ambilight Sync
+description: Synchronisiert die Bildschirmfarbe mit den LEDs
+triggers:
+  - entity_id: sensor.dominant_color
+    trigger: state
+actions:
+  - action: light.turn_on
     target:
-      entity_id: light.your_led_strip
+      entity_id:
+        - light.schlafzimmer_sterne
     data:
-      rgb_color: >
-        {{ [
-          state_attr('sensor.dominant_color', 'r'),
-          state_attr('sensor.dominant_color', 'g'),
-          state_attr('sensor.dominant_color', 'b')
-        ] }}
-      transition: 0.5
+      rgb_color:
+        - '{{ state_attr(''sensor.dominant_color'', ''r'') | int }}'
+        - '{{ state_attr(''sensor.dominant_color'', ''g'') | int }}'
+        - '{{ state_attr(''sensor.dominant_color'', ''b'') | int }}'
+      brightness_pct: 10
+      transition: 0.2
+
 ```
-
----
-
-## 🔄 Autostart on Linux
-
-To run the script automatically at system startup, you can create a **systemd service**.
-
-1. Create a new service file:
-   ```bash
-   sudo nano /etc/systemd/system/ambilight.service
-   ```
-
-2. Insert the following content (adjust paths accordingly):
-   ```ini
-   [Unit]
-   Description=Ambient Light Python Script
-   After=network.target
-
-   [Service]
-   ExecStart=/usr/bin/python3 /path/to/your/ambilight.py
-   WorkingDirectory=/path/to/your/project
-   Environment="HA_URL=http://192.xxx.xxx.xx:8123/api/states/sensor.dominant_color"
-   Environment="HA_TOKEN=LONG_LIVED_ACCESS_TOKEN"
-   Restart=always
-   User=yourusername
-
-   [Install]
-   WantedBy=multi-user.target
-   ```
-
-3. Enable and start the service:
-   ```bash
-   sudo systemctl daemon-reload
-   sudo systemctl enable ambilight.service
-   sudo systemctl start ambilight.service
-   ```
-
-4. Check the status:
-   ```bash
-   systemctl status ambilight.service
-   ```
-
----
 
 ## 🎉 Example
 
