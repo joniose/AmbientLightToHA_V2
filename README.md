@@ -26,9 +26,9 @@ Forked and changed, that the area under the mouse takes the color. After time x 
 Before running the script, you need to edit the variables:
 
 ### Windows 
-```powershell
-$env:HA_URL="http://192.xxx.xxx.xx:8123/api/states/sensor.dominant_color"
-$env:HA_TOKEN="LONG_LIVED_ACCESS_TOKEN"
+```
+HA_URL="http://192.xxx.xxx.xx:8123/api/states/sensor.dominant_color"
+HA_TOKEN="LONG_LIVED_ACCESS_TOKEN"
 ```
 
 > 📝 To generate a **Long-Lived Access Token**, open your Home Assistant profile (bottom left in the HA UI), scroll down to **Long-Lived Access Tokens**, and create a new one.
